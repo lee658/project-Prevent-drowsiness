@@ -8,16 +8,8 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 cap = cv.VideoCapture(0)
 
-
+# range는 끝값이 포함안됨
 ALL = list(range(0, 68))
-RIGHT_EYEBROW = list(range(17, 22))
-LEFT_EYEBROW = list(range(22, 27))
-RIGHT_EYE = list(range(36, 42))
-LEFT_EYE = list(range(42, 48))
-NOSE = list(range(27, 36))
-MOUTH_OUTLINE = list(range(48, 61))
-MOUTH_INNER = list(range(61, 68))
-JAWLINE = list(range(0, 17))
 
 index = ALL
 
@@ -25,6 +17,7 @@ while True:
 
     ret, img_frame = cap.read()
     img_frame = cv.flip(img_frame, 1)
+
     img_gray = cv.cvtColor(img_frame, cv.COLOR_BGR2GRAY)
 
     dets = detector(img_gray, 1)
@@ -46,6 +39,7 @@ while True:
         cv.rectangle(img_frame, (face.left(), face.top()), (face.right(), face.bottom()),
                      (0, 0, 255), 3)
 
+
     cv.imshow('result', img_frame)
 
     key = cv.waitKey(1)
@@ -53,17 +47,5 @@ while True:
     if key == 27:
         break
 
-    elif key == ord('1'):
-        index = ALL
-    elif key == ord('2'):
-        index = LEFT_EYEBROW + RIGHT_EYEBROW
-    elif key == ord('3'):
-        index = LEFT_EYE + RIGHT_EYE
-    elif key == ord('4'):
-        index = NOSE
-    elif key == ord('5'):
-        index = MOUTH_OUTLINE + MOUTH_INNER
-    elif key == ord('6'):
-        index = JAWLINE
 
 cap.release()

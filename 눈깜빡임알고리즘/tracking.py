@@ -4,6 +4,8 @@ import dlib
 from scipy.spatial import distance as dist
 import time
 
+#euclidean(u, v [, w]) 두 1 차원 배열 사이의 유클리드 거리를 계산합니다.
+
 def eyeAspectRatio(points):
 	A = dist.euclidean(points[1], points[5])
 	B = dist.euclidean(points[2], points[4])
@@ -18,8 +20,8 @@ def getROI(frame, image, landmarks, eye):
 		points = [42, 43, 44, 45, 46, 47]
 		
 	region = np.array([[landmarks.part(point).x, landmarks.part(point).y] for point in points])
-	margin = 7
-	
+	margin= 7
+
 	left = np.min(region[:, 0])
 	top = np.min(region[:, 1])
 	right = np.max(region[:, 0])

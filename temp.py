@@ -1,36 +1,70 @@
-import sys
-import cv2
+import dlib
+import cv2 as cv
 import numpy as np
 
-cap = cv2.VideoCapture(0 + cv2.CAP_DSHOW)
 
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1000000)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1000000)
+detector = dlib.get_frontal_face_detector()
 
+predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
+cap = cv.VideoCapture(0)
 
 
+ALL = list(range(0, 68))
+RIGHT_EYEBROW = list(range(17, 22))
+LEFT_EYEBROW = list(range(22, 27))
+RIGHT_EYE = list(range(36, 42))
+LEFT_EYE = list(range(42, 48))
+NOSE = list(range(27, 36))
+MOUTH_OUTLINE = list(range(48, 61))
+MOUTH_INNER = list(range(61, 68))
+JAWLINE = list(range(0, 17))
 
-if cap.isOpened():
-    while True:
-        ret, main = cap.read()
-        main = cv2.flip(main, 1)
-        gray = cv2.cvtColor(main, cv2.COLOR_BGR2GRAY)
-        if ret:
+index = ALL
 
-            faces = face_cascade.detectMultiScale(gray, 1.3, 5)
-            for (x, y, w, h) in faces:
-                cv2.rectangle(main, (x, y), (x + w, y + h), (255, 0, 0), 2)
-                roi_gray = gray[y:y + h, x:x + w]
-                roi_color = main[y:y + h, x:x + w]
-                eyes = eye_cascade.detectMultiScale(roi_gray)
-                for (ex, ey, ew, eh) in eyes:
-                    cv2.rectangle(roi_color, (ex, ey), (ex + ew, ey + eh), (0, 255, 0), 2)
+while True:
 
-            cv2.imshow('camera', main)
-            if cv2.waitKey(1) != -1:
-                break
+    ret, img_frame = cap.read()
+    img_frame = cv.flip(img_frame, 1)
+    img_gray = cv.cvtColor(img_frame, cv.COLOR_BGR2GRAY)
+
+    dets = detector(img_gray, 1)
+
+    for face in dets:
+
+        shape = predictor(img_frame, face)  # 얼굴에서 68개 점 찾기
+
+        list_points = []
+        for p in shape.parts():
+            list_points.append([p.x, p.y])
+
+        list_points = np.array(list_points)
+
+        for i, pt in enumerate(list_points[index]):
+            pt_pos = (pt[0], pt[1])
+            cv.circle(img_frame, pt_pos, 2, (0, 255, 0), -1)
+
+        cv.rectangle(img_frame, (face.left(), face.top()), (face.right(), face.bottom()),
+                     (0, 0, 255), 3)
+
+    cv.imshow('result', img_frame)
+
+    key = cv.waitKey(1)
+
+    if key == 27:
+        break
+
+    elif key == ord('1'):
+        index = ALL
+    elif key == ord('2'):
+        index = LEFT_EYEBROW + RIGHT_EYEBROW
+    elif key == ord('3'):
+        index = LEFT_EYE + RIGHT_EYE
+    elif key == ord('4'):
+        index = NOSE
+    elif key == ord('5'):
+        index = MOUTH_OUTLINE + MOUTH_INNER
+    elif key == ord('6'):
+        index = JAWLINE
+
 cap.release()
-cv2.destroyAllWindows()
