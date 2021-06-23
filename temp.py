@@ -9,6 +9,7 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 cap = cv.VideoCapture(0)
 
+fl = open("test.txt", "w+")
 
 ALL = list(range(0, 68))
 RIGHT_EYEBROW = list(range(17, 22))

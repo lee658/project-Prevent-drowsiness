@@ -11,6 +11,8 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 cap = cv.VideoCapture(0)
 
+fl = open("test.txt", "w+")
+
 ALL = list(range(0, 68))
 RIGHT_EYEBROW = list(range(17, 22))
 LEFT_EYEBROW = list(range(22, 27))
@@ -22,7 +24,6 @@ MOUTH_INNER = list(range(61, 68))
 JAWLINE = list(range(0, 17))
 
 index = ALL
-
 
 while True:
 
@@ -53,19 +54,24 @@ while True:
         a = dist.euclidean(arr[1], arr[5])
         b = dist.euclidean(arr[2], arr[4])
         c = dist.euclidean(arr[0], arr[3])
-        r1 = (a + b) / (2.0 * c)
+        r1 = abs((a + b)) / abs((2.0 * c)) * 100
         d = dist.euclidean(arr[7], arr[11])
         e = dist.euclidean(arr[8], arr[10])
         f = dist.euclidean(arr[6], arr[9])
-        r2 = (d + e) / (2.0 * f)
-        if r1 >= 0.2:
-            cv.putText(img_frame, "good", (125, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        r2 = abs((d + e)) / abs((2.0 * f)) * 100
+        t1 = (r1 + r2) / 2
+        t = "%f" %t1
+        fl.write(t+"\n")
+        flr = fl.readline()
+        print(flr)
+
+        cv.putText(img_frame, t, (400, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+
+        if r1 <= 10:
+            cv.putText(img_frame, "sl", (125, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         cv.rectangle(img_frame, (face.left(), face.top()), (face.right(), face.bottom()),
                      (0, 0, 255), 3)
-
-
-
 
     cv.imshow('result', img_frame)
 
@@ -89,14 +95,3 @@ while True:
 
 cap.release()
 
-# a = dist.euclidean(abs(pt[37]), abs(pt[40]))
-# b = dist.euclidean(abs(pt[38]), abs(pt[41]))
-# c = dist.euclidean(abs(pt[36]), abs(pt[39]))
-# r1 = (a + b) / (2.0 * c)
-# d = dist.euclidean(abs(pt[43]), abs(pt[46]))
-# e = dist.euclidean(abs(pt[44]), abs(pt[47]))
-# f = dist.euclidean(abs(pt[42]), abs(pt[45]))
-# r2 = (d + e) / (2.0 * f)
-#
-# if r1 <= 0.2:
-#    printText(img_frame, "CENTER")
