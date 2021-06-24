@@ -11,7 +11,7 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 
 cap = cv.VideoCapture(0)
 
-fl = open("test.txt", "w+")
+
 
 ALL = list(range(0, 68))
 RIGHT_EYEBROW = list(range(17, 22))
@@ -61,11 +61,23 @@ while True:
         r2 = abs((d + e)) / abs((2.0 * f)) * 100
         t1 = (r1 + r2) / 2
         t = "%f" %t1
+        fl = open("test.txt", "a")
         fl.write(t+"\n")
-        flr = fl.readline()
-        print(flr)
+        fl = open("test.txt", "r")
+        lines = fl.read().splitlines()  # 한줄씩 문자열 읽기
+        data = []
+        ep = 0
 
+        for line in lines:
+            data.append(line)
+
+        for i in range(0, len(data)):
+            ep += float(data[i])
+
+        avg = ep / len(data)
+        avgt = "%f" %avg
         cv.putText(img_frame, t, (400, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+        cv.putText(img_frame, avgt, (200, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
         if r1 <= 10:
             cv.putText(img_frame, "sl", (125, 50), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
