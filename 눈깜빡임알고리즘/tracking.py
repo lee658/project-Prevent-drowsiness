@@ -20,7 +20,7 @@ def getROI(frame, image, landmarks, eye):
 		points = [42, 43, 44, 45, 46, 47]
 		
 	region = np.array([[landmarks.part(point).x, landmarks.part(point).y] for point in points])
-	margin= 7
+	margin = 7
 
 	left = np.min(region[:, 0])
 	top = np.min(region[:, 1])
